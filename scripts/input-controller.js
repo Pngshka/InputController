@@ -70,37 +70,9 @@ export class InputController {
     attach(target, dontEnable) {
         this.detach();
         this.#target = target;
-        this.#startEvent = ((e) => {
-            if (e.repeat) return;
-            if (this.enabled == false) return;
-            const goodActives = this.#activites.filter(
-                (x) => x.enable && x.keys.includes(e.keyCode)
-            );
-            for (let index in goodActives) {
-                const goodActiv = goodActives[index];
-                const eventName = InputController.ACTION_ACTIVATED;
-                let event = new Event(eventName);
-                event.name = goodActiv.name;
-                this.#target.dispatchEvent(event);
-                goodActiv.activeNow++
-            }
-        }).bind(this);
+        this.#startEvent = ((e) => this.startAndEnd(InputController.ACTION_ACTIVATED, e)).bind(this);
 
-        this.#endEvent = ((e) => {
-            if (e.repeat) return;
-            if (this.enabled == false) return;
-            const goodActives = this.#activites.filter(
-                (x) => x.enable && x.keys.includes(e.keyCode)
-            );
-            for (let index in goodActives) {
-                const goodActiv = goodActives[index];
-                const eventName = InputController.ACTION_DEACTIVATED;
-                let event = new Event(eventName);
-                event.name = goodActiv.name;
-                this.#target.dispatchEvent(event);
-                goodActiv.activeNow--;
-            }
-        }).bind(this);
+        this.#endEvent = ((e) => this.startAndEnd(InputController.ACTION_DEACTIVATED, e)).bind(this);
         this.#target.addEventListener('keydown', this.#startEvent);
         this.#target.addEventListener('keyup', this.#endEvent);
         if (dontEnable == null || dontEnable == false)
@@ -121,7 +93,7 @@ export class InputController {
         return goodActives.length != 0;
     }
 
-    startAndEnd(ACTION) {
+    startAndEnd(ACTION, e) {
         if (e.repeat) return;
             if (this.enabled == false) return;
             const goodActives = this.#activites.filter(
@@ -130,8 +102,9 @@ export class InputController {
             for (let index in goodActives) {
                 const goodActiv = goodActives[index];
                 const eventName = InputController.ACTION;
-                let event = new Event(eventName);
-                event.name = goodActiv.name;
+                let event = new CustomEvent(eventName, {
+                    detail: { name: goodActiv.name }
+                });
                 this.#target.dispatchEvent(event);
                 if (ACTION=='input-controller:action-activated') goodActiv.activeNow++;
                 else goodActiv.activeNow--;
