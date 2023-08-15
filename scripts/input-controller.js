@@ -28,34 +28,17 @@ export class InputController {
     static ACTION_ACTIVATED = 'input-controller:action-activated';
     static ACTION_DEACTIVATED = 'input-controller:action-deactivated';
     #target;
-    #activites = [];
+    #activites = new Map();
     #startEvent;
     #endEvent;
-    startAndEndEvent = function (ACTION, e) {
-        if (e.repeat) return;
-        if (this.enabled === false) return;
-        const goodActives = this.#activites.filter(
-            (x) => x.enable && x.keys.includes(e.keyCode)
-        );
-        for (let index in goodActives) {
-            const goodActiv = goodActives[index];
-            const activeButtons = goodActiv.keys.filter(x => this.isKeyPressed(x));
-            if (activeButtons.length != 0 && ACTION === 'input-controller:action-activated') {
-                return;
-            }
-            const eventName = InputController.ACTION;
-            let event = new CustomEvent(eventName, {
-                detail: { name: goodActiv.name }
-            });
-            this.#target.dispatchEvent(event);
-            if (ACTION === 'input-controller:action-activated') goodActiv.activeNow=e.keyCode;
-            else if (goodActiv.activeNow!=activeButtons) goodActiv.activeNow = 0;
-    
 
-        }
-    };
 
     constructor(someObj, target) {
+
+        this.startAndEndEvent = this.startAndEndEvent.bind(this);
+
+        const ACTION = "ACTION_ACTIVATED";
+        //console.log(InputController[ACTION]);
         this.enabled = false;
         this.focused = document.hasFocus();
         if (someObj != null) {
@@ -67,36 +50,59 @@ export class InputController {
     bindActions(actionsToBind) {
         for (const key in actionsToBind) {
             if (!actionsToBind.hasOwnProperty(key)) return
-            if (this.#activites.some((x) => (x.name === key))) {
+            if (this.#activites.has(key)) {
 
-                this.#activites.filter(
-                    (x) => (x.name === key)
-                )[0].unionWithOtherActiv(actionsToBind[key].keys);
+                this.#activites.get(key).unionWithOtherActiv(actionsToBind[key].keys);
             } else {
 
                 let enabled = actionsToBind[key].enabled ?? true;
                 let Activs = new Activ(key, enabled, actionsToBind[key].keys);
-                this.#activites.push(Activs);
+                this.#activites.set(key, Activs);
             }
         }
     }
 
+    startAndEndEvent(e) {
+        const ACTION = this.getActionEvent(e);
+
+        if (e.repeat) return;
+        if (this.enabled === false) return;
+
+        console.log(this.#activites);
+        const goodActives = Array.from(this.#activites.values())
+            .filter(x => x.enable && x.keys.includes(e.keyCode));
+
+        for (let index in goodActives) {
+            const goodActiv = goodActives[index];
+            const activeButtons = Array.from(goodActiv.keys.values())
+                .filter(x => this.isKeyPressed(x));
+            if (activeButtons.length != 0 && ACTION === 'input-controller:action-activated') {
+                return;
+            }
+
+            const eventName = InputController.ACTION;
+            let event = new CustomEvent(eventName, {
+                detail: { name: goodActiv.name }
+            });
+            this.#target.dispatchEvent(event);
+            if (ACTION === 'input-controller:action-activated') goodActiv.activeNow = e.keyCode;
+            else if (goodActiv.activeNow != activeButtons) goodActiv.activeNow = 0;
+
+
+        }
+    };
+
     enableAction(actionName) {
-        this.#activites
-            .filter((x) => (x.name === actionName))
-            .forEach((x) => (x.enable = true));
+        this.#activites.get(actionName).enable = true;
+
     }
 
     disableAction(actionName) {
-        this.#activites
-            .filter((x) => (x.name === actionName))
-            .forEach((x) => (x.enable = false));
+        this.#activites.get(actionName).enable = false;
     }
 
     isActionActive(actionName) {
-        const activ = this.#activites.filter(
-            (x) => (x.name === actionName)
-        )[0];
+        const activ = this.#activites.get(actionName);
 
         this.focused = document.hasFocus();
         if (this.focused)
@@ -104,30 +110,42 @@ export class InputController {
         else return false;
     }
 
+    getActionEvent(e) {
+        return e.type === 'keydown' ? InputController.ACTION_ACTIVATED : InputController.ACTION_DEACTIVATED;
+    }
+
     attach(target, dontEnable) {
         this.detach();
         this.#target = target;
-        this.#startEvent = ((e) => this.startAndEndEvent(InputController.ACTION_ACTIVATED, e)).bind(this);
-
-        this.#endEvent = ((e) => this.startAndEndEvent(InputController.ACTION_DEACTIVATED, e)).bind(this);
-        this.#target.addEventListener('keydown', this.#startEvent);
-        this.#target.addEventListener('keyup', this.#endEvent);
+        this.#target.addEventListener('keydown', this.startAndEndEvent);
+        this.#target.addEventListener('keyup', this.startAndEndEvent);
         if (!dontEnable)
             this.enabled = true;
     }
 
     detach() {
         if (!this.#target) return;
-        this.#target.removeEventListener('keydown', this.#startEvent);
-        this.#target.removeEventListener('keyup', this.#endEvent);
+        this.#target.removeEventListener('keydown', this.startAndEndEvent);
+        this.#target.removeEventListener('keyup', this.startAndEndEvent);
         this.enable = false;
     }
 
     isKeyPressed(keyCode) {
-        const goodActives = this.#activites
-            .filter((x) => (x.keys.includes(keyCode) && x.activeNow != 0));
+        const pressedKeys = {};
+       
+        function keyPressed(event) {
+            console.log("keyPressed");
+            pressedKeys[event.keyCode] = true;
+        }
 
-        return goodActives.length != 0;
+        function keyReleased(event) {
+            console.log("keyReleased");
+            delete pressedKeys[event.keyCode];
+        }
+
+        document.addEventListener("keydown", keyPressed);
+        document.addEventListener("keyup", keyReleased);
+        return pressedKeys[keyCode] === true;
     }
 
 }

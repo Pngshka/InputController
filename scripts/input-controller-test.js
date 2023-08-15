@@ -46,6 +46,11 @@ unplugLeft.onclick = () => {
     printDebug("Активность отключена");
 }
 
+enableLeft.onclick = () => {
+    inputController.enableAction("left");
+    printDebug("Активность включена");
+}
+
 
 addNewActivButton.onclick = () => {
     const spaceKeyCode = 32; 
@@ -65,7 +70,7 @@ setInterval(()=>
     {
         let rect = interactiveObject.getBoundingClientRect();
         if (inputController.isActionActive('left') && inputController.focused) {
-            console.log(rect);
+            //console.log(rect);
             interactiveObject.style.position = 'fixed';
             interactiveObject.style.left = (rect.left - 10)+'px';
             interactiveObject.style.top = (rect.top)+'px';
@@ -76,7 +81,7 @@ setInterval(()=>
             interactiveObject.style.top = (rect.top)+'px';
         }
         if (inputController.isActionActive('jump') && inputController.focused) {
-            console.log(interactiveObject.style);
+            //console.log(interactiveObject.style);
             if (interactiveObject.style['background-color'] === 'black') {
                 interactiveObject.style['background-color'] = 'green';
             }
