@@ -67,17 +67,17 @@ setInterval(()=>
         if (inputController.isActionActive('left') && inputController.focused) {
             console.log(rect);
             interactiveObject.style.position = 'fixed';
-            interactiveObject.style.left = (rect.left - 1)+'px';
+            interactiveObject.style.left = (rect.left - 10)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
         if (inputController.isActionActive('right') && inputController.focused) {
             interactiveObject.style.position = 'fixed';
-            interactiveObject.style.left = (rect.left + 1)+'px';
+            interactiveObject.style.left = (rect.left + 10)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
         if (inputController.isActionActive('jump') && inputController.focused) {
             console.log(interactiveObject.style);
-            if (interactiveObject.style['background-color'] == 'black') {
+            if (interactiveObject.style['background-color'] === 'black') {
                 interactiveObject.style['background-color'] = 'green';
             }
             else {
