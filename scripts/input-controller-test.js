@@ -41,11 +41,20 @@ deactivateButton.onclick = () => {
     printDebug("Контроллер деактивирован");
 }
 
+unplugLeft.onclick = () => {
+    inputController.disableAction("left");
+    printDebug("Активность отключена");
+}
+
+
 addNewActivButton.onclick = () => {
     const spaceKeyCode = 32; 
     let newBind = {
         jump: {
             keys: [spaceKeyCode]
+        }, 
+        left: {
+            keys: [44]
         }
     }
     inputController.bindActions(newBind);
@@ -55,18 +64,18 @@ addNewActivButton.onclick = () => {
 setInterval(()=> 
     {
         let rect = interactiveObject.getBoundingClientRect();
-        if (inputController.isActionActive('left')) {
+        if (inputController.isActionActive('left') && inputController.focused) {
             console.log(rect);
             interactiveObject.style.position = 'fixed';
             interactiveObject.style.left = (rect.left - 1)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
-        if (inputController.isActionActive('right')) {
+        if (inputController.isActionActive('right') && inputController.focused) {
             interactiveObject.style.position = 'fixed';
             interactiveObject.style.left = (rect.left + 1)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
-        if (inputController.isActionActive('jump')) {
+        if (inputController.isActionActive('jump') && inputController.focused) {
             console.log(interactiveObject.style);
             if (interactiveObject.style['background-color'] == 'black') {
                 interactiveObject.style['background-color'] = 'green';

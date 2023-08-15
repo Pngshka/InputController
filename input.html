@@ -24,6 +24,9 @@
     <div class="test-unit">
         <button id="addNewActivButton">Байнд дополнительное действие прыжок</button>
     </div>
+    <div class="test-unit">
+        <button id="unplugLeft">Отключить активность left</button>
+    </div>
     <div style="position: relative;" class="test-unit">
         <div style="background-color: black;" id="interactiveObject"></div>
     </div>
@@ -35,9 +38,13 @@
 </body>
 <style>
     body {
-        display: flex;
         flex-direction: column;
         flex-wrap: wrap;
+    }
+    button {
+
+        height: 40px;
+        width: 300px;
     }
     .test-unit {
         display: flex;
@@ -45,7 +52,7 @@
         flex-wrap: wrap;
         margin-top: 50px;
         padding: 50px;
-        border: 2px solid;
+        border: 1px solid;
         gap: 20px;
     }
     #interactiveObject {
