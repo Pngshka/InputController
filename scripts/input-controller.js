@@ -1,6 +1,6 @@
 'use strict';
 
-class Activ {
+export class Activ {
     name;
     enable;
     keys;
@@ -9,85 +9,132 @@ class Activ {
     constructor(name, enable, keys) {
         this.name = name;
         this.enable = enable;
-        this.keys = Array.from(keys);
-        console.log(name, enable, keys);
+        this.keys = keys;
     }
 
     isActiveNow() {
         return this.enable && this.activeNow != 0;
     }
+
+
 }
 
-class InputController {
+export class InputController {
     enabled;
-    focused;    //todo такое же должно быть у target
-    static ACTION_ACTIVATED = 'actionactivated';
-    static ACTION_DEACTIVATED = 'actiondeactivated';
+    focused; 
+    static ACTION_ACTIVATED = 'input-controller:action-activated';
+    static ACTION_DEACTIVATED = 'input-controller:action-deactivated';
     #target;
     #activites = [];
-    #event;
+    #startEvent;
+    #endEvent;
 
     constructor(someObj, target) {
         this.enabled = false;
         this.focused = true;
         if (someObj != null) {
-            this.#target = target;
             this.bindActions(someObj);
+            this.attach(target);
         }
     }
 
-     bindActions(actionsToBind) {//Не дублировать сущности при добавлении новых
-        for (var key in actionsToBind) {
-            if (actionsToBind.hasOwnProperty(key)) {
-                let enabled = actionsToBind.enabled === false ? false : true;
-                let Activs = new Activ(key, enabled, actionsToBind[key].keys);
-                this.#activites.push(Activs);
-            }
+    bindActions(actionsToBind) {
+        for (const key in actionsToBind) {
+            if (actionsToBind.hasOwnProperty(key) == false) return
+
+            let enabled = actionsToBind[key].enabled === false ? false : true;
+            let Activs = new Activ(key, enabled, actionsToBind[key].keys);
+            this.#activites.push(Activs);
         }
     }
 
     enableAction(actionName) {
         this.#activites
-            .filter((x) => (x.name = actionName))
+            .filter((x) => (x.name == actionName))
             .forEach((x) => (x.enable = true));
-
-
     }
 
     disableAction(actionName) {
         this.#activites
-            .filter((x) => (x.name = actionName))
+            .filter((x) => (x.name == actionName))
             .forEach((x) => (x.enable = false));
     }
 
-     isActionActive(actionName) {
+    isActionActive(actionName) {
         const activ = this.#activites.filter(
-            (x) => (x.name = actionName)
+            (x) => (x.name == actionName)
         )[0];
-        return activ.isActiveNow();
-     }
+        return activ != null && activ.isActiveNow();
+    }
 
-    attach() {}
+    attach(target, dontEnable) {
+        this.detach();
+        this.#target = target;
+        this.#startEvent = ((e) => {
+            if (e.repeat) return;
+            if (this.enabled == false) return;
+            const goodActives = this.#activites.filter(
+                (x) => x.enable && x.keys.includes(e.keyCode)
+            );
+            for (let index in goodActives) {
+                const goodActiv = goodActives[index];
+                const eventName = InputController.ACTION_ACTIVATED;
+                let event = new Event(eventName);
+                event.name = goodActiv.name;
+                this.#target.dispatchEvent(event);
+                goodActiv.activeNow++
+            }
+        }).bind(this);
+
+        this.#endEvent = ((e) => {
+            if (e.repeat) return;
+            if (this.enabled == false) return;
+            const goodActives = this.#activites.filter(
+                (x) => x.enable && x.keys.includes(e.keyCode)
+            );
+            for (let index in goodActives) {
+                const goodActiv = goodActives[index];
+                const eventName = InputController.ACTION_DEACTIVATED;
+                let event = new Event(eventName);
+                event.name = goodActiv.name;
+                this.#target.dispatchEvent(event);
+                goodActiv.activeNow--;
+            }
+        }).bind(this);
+        this.#target.addEventListener('keydown', this.#startEvent);
+        this.#target.addEventListener('keyup', this.#endEvent);
+        if (dontEnable == null || dontEnable == false)
+            this.enabled = true;
+    }
+
     detach() {
-        if (target == null) return;
-            this.#target.removeEventListener(this.#event);
-            this.enable = false;
+        if (this.#target == null) return;
+        this.#target.removeEventListener('keydown', this.#startEvent);
+        this.#target.removeEventListener('keyup', this.#endEvent);
+        this.enable = false;
+    }
+
+    isKeyPressed(keyCode) {
+        const goodActives = this.#activites
+            .filter((x) => (x.keys.includes(keyCode) && x.activeNow != 0));
+
+        return goodActives.length != 0;
+    }
+
+    startAndEnd(ACTION) {
+        if (e.repeat) return;
+            if (this.enabled == false) return;
+            const goodActives = this.#activites.filter(
+                (x) => x.enable && x.keys.includes(e.keyCode)
+            );
+            for (let index in goodActives) {
+                const goodActiv = goodActives[index];
+                const eventName = InputController.ACTION;
+                let event = new Event(eventName);
+                event.name = goodActiv.name;
+                this.#target.dispatchEvent(event);
+                if (ACTION=='input-controller:action-activated') goodActiv.activeNow++;
+                else goodActiv.activeNow--;
         }
-
-    isKeyPressed() {
-
     }
-
 }
-
-let someObj = {
-    right: {
-        keys: [39, 68]
-    },
-    left: {
-        keys: [37, 65]
-    }
-};
-
-
-let inputController = new InputController(someObj);

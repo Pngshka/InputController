@@ -4,9 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="scripts/input-controller.js"></script>
 </head>
 <body>
-    
+    <div class="test-unit">
+        <textarea id="textAreaDisplay" readonly="true"></textarea>
+    </div>
+    <div class="test-unit">
+        <button id="attachButton">Нацелить контроллер на document</button>
+    </div>
+    <div class="test-unit">
+        <button id="detachButton">Убрать всех слушателей</button>
+    </div>
+    <div class="test-unit">
+        <button id="activateButton">Активировать контроллер</button>
+    </div>
+    <div class="test-unit">
+        <button id="deactivateButton">Дективировать контроллер</button>
+    </div>
+    <div class="test-unit">
+        <button id="addNewActivButton">Байнд дополнительное действие прыжок</button>
+    </div>
+    <div style="position: relative;" class="test-unit">
+        <div style="background-color: black;" id="interactiveObject"></div>
+    </div>
+
+
+
+
+    <script type="module" src="scripts/input-controller-test.js"></script>
 </body>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    .test-unit {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        margin-top: 50px;
+        padding: 50px;
+        border: 2px solid;
+        gap: 20px;
+    }
+    #interactiveObject {
+        margin: auto;
+        height: 200px;
+        width: 200px;
+        
+    }
+</style>
 </html>
