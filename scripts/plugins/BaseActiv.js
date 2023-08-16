@@ -11,7 +11,7 @@ export class BaseActiv {
     }
 
     isActiveNow() {
-        return this.enable && this.activeNow != 0;
+        return this.enable && !!this.activeNow;
     }
 
     unionWithOtherActiv(keys) { }

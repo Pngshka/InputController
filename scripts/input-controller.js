@@ -65,24 +65,4 @@ export class InputController {
         });
     }
 
-    isKeyPressed(keyCode) {
-        const pressedKeys = {};
-        let flag = false;
-
-        function keyPressed(event) {
-            pressedKeys[event.keyCode] = true;
-        }
-
-        function keyReleased(event) {
-            delete pressedKeys[event.keyCode];
-        }
-
-
-        document.addEventListener("keydown", keyPressed);
-        document.addEventListener("keyup", keyReleased);
-        document.addEventListener("mousedown", keyPressed);
-        document.addEventListener("mouseup", keyReleased);
-
-        return pressedKeys[keyCode] === true;
-    }
 }
