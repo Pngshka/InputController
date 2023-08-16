@@ -10,6 +10,7 @@ export class BasePlugin {
             this.attach(target);
     }
 
+    //bindActions(actionsToBind) {}
     attach(target) { }
     detach() { }
 }

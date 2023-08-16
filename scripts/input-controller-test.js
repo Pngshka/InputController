@@ -11,9 +11,9 @@ let someObj = {
     }
 };
 let inputController = new InputController();
-inputController.bindActions(someObj);
 let keyboardPlugin = new KeyboardPlugin(inputController);
 inputController.addPlugin(keyboardPlugin);
+keyboardPlugin.bindActions(someObj);
 
 
 
@@ -72,18 +72,18 @@ addNewActivButton.onclick = () => {
 setInterval(()=> 
     {
         let rect = interactiveObject.getBoundingClientRect();
-        if (inputController.isActionActive('left') && inputController.focused) {
+        if (inputController.isActionActive('left')) {
             //console.log(rect);
             interactiveObject.style.position = 'fixed';
             interactiveObject.style.left = (rect.left - 10)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
-        if (inputController.isActionActive('right') && inputController.focused) {
+        if (inputController.isActionActive('right')) {
             interactiveObject.style.position = 'fixed';
             interactiveObject.style.left = (rect.left + 10)+'px';
             interactiveObject.style.top = (rect.top)+'px';
         }
-        if (inputController.isActionActive('jump') && inputController.focused) {
+        if (inputController.isActionActive('jump')) {
             //console.log(interactiveObject.style);
             if (interactiveObject.style['background-color'] === 'black') {
                 interactiveObject.style['background-color'] = 'green';
