@@ -2,10 +2,10 @@
 
 import { BasePlugin } from "./BasePlugin.js";
 import { InputController } from '../input-controller.js';
-import { ActivWithKeyCode } from "./ActivWithKeyCode.js";
+import { ActivWithMouseCode } from "./ActivWithMouseCode.js";
 
 
-export class KeyboardPlugin extends BasePlugin {
+export class MousePlugin extends BasePlugin {
     constructor(inputController, target, someObj) {
         super(inputController, target);
         if (target) {
@@ -18,19 +18,19 @@ export class KeyboardPlugin extends BasePlugin {
         this.detach();
         this._target = target;
         this.#lastEvent = this.startAndEndEvent.bind(this);
-        this._target.addEventListener('keydown', this.#lastEvent);
-        this._target.addEventListener('keyup', this.#lastEvent);
+        this._target.addEventListener('onclick', this.#lastEvent);
+        this._target.addEventListener('onclick', this.#lastEvent);
     }
 
     detach() {
         if (!this._target) return;
-        this._target.removeEventListener('keydown', this.#lastEvent);
-        this._target.removeEventListener('keyup', this.#lastEvent);
+        this._target.removeEventListener('onclick', this.#lastEvent);
+        this._target.removeEventListener('onclick', this.#lastEvent);
         this.enable = false;
     }
 
     getActionEvent(e) {
-        return e.type === 'keydown' ? InputController.ACTION_ACTIVATED : InputController.ACTION_DEACTIVATED;
+        return e.type === 'onclick' ? InputController.ACTION_ACTIVATED : InputController.ACTION_DEACTIVATED;
     }
 
     startAndEndEvent(e) {
@@ -40,7 +40,7 @@ export class KeyboardPlugin extends BasePlugin {
         if (this._inputController.enabled === false) return;
 
         const goodActives = Array.from(this._inputController.activites.values())
-            .filter(x => x.enable && x instanceof ActivWithKeyCode && x.keys.includes(e.keyCode));
+            .filter(x => x.enable && x instanceof ActivWithMouseCode && x.keys.includes(e.keyCode));
 
 
         for (let index in goodActives) {

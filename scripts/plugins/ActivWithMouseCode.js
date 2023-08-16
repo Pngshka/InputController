@@ -1,7 +1,7 @@
 
 import { BaseActiv } from "./BaseActiv.js";
 
-export class ActivWithKeyCode extends BaseActiv {
+export class ActivWithMouseCode extends BaseActiv {
     keys = [];
     activeNow = 0;
 

@@ -1,20 +1,25 @@
 import { InputController } from './input-controller.js';
 import { KeyboardPlugin } from './plugins/KeyboardPlugin.js';
+import { MousePlugin } from './plugins/MousePlugin.js';
+import { ActivWithKeyCode } from './plugins/ActivWithKeyCode.js';
+import { ActivWithMouseCode } from './plugins/ActivWithMouseCode.js';
 
 
-let someObj = {
-    left: {
-        keys: [37, 65]
-    },
-    right: {
-        keys: [39, 68]//, enabled: false
-    }
-};
+let leftAktiv = new ActivWithKeyCode("left", true, [37, 65]);
+let rightAktiv = new ActivWithKeyCode("right", true, [39, 68]);
+let jumpSecondAktiv = new ActivWithMouseCode("right", true, [1]);
+
 let inputController = new InputController();
-let keyboardPlugin = new KeyboardPlugin(inputController);
-inputController.addPlugin(keyboardPlugin);
-keyboardPlugin.bindActions(someObj);
 
+let keyboardPlugin = new KeyboardPlugin(inputController);
+let mousePlugin = new MousePlugin(inputController);
+
+inputController.addPlugin(keyboardPlugin);
+inputController.addPlugin(mousePlugin);
+
+inputController.bindActions(leftAktiv);
+inputController.bindActions(rightAktiv);
+inputController.bindActions(jumpSecondAktiv);
 
 
 function printDebug(text) {
@@ -56,42 +61,34 @@ enableLeft.onclick = () => {
 
 
 addNewActivButton.onclick = () => {
-    const spaceKeyCode = 32; 
-    let newBind = {
-        jump: {
-            keys: [spaceKeyCode]
-        }, 
-        left: {
-            keys: [44]
-        }
-    }
-    inputController.bindActions(newBind);
+    let jumpAktiv = new ActivWithKeyCode("jump", true, [32]);
+
+    inputController.bindActions(jumpAktiv);
     printDebug("Байнд дополнительное действие прыжок ");
 }
 
-setInterval(()=> 
-    {
-        let rect = interactiveObject.getBoundingClientRect();
-        if (inputController.isActionActive('left')) {
-            //console.log(rect);
-            interactiveObject.style.position = 'fixed';
-            interactiveObject.style.left = (rect.left - 10)+'px';
-            interactiveObject.style.top = (rect.top)+'px';
-        }
-        if (inputController.isActionActive('right')) {
-            interactiveObject.style.position = 'fixed';
-            interactiveObject.style.left = (rect.left + 10)+'px';
-            interactiveObject.style.top = (rect.top)+'px';
-        }
-        if (inputController.isActionActive('jump')) {
-            //console.log(interactiveObject.style);
-            if (interactiveObject.style['background-color'] === 'black') {
-                interactiveObject.style['background-color'] = 'green';
-            }
-            else {
-                interactiveObject.style['background-color'] = 'black';
-            }
-
-        }
+setInterval(() => {
+    let rect = interactiveObject.getBoundingClientRect();
+    if (inputController.isActionActive('left')) {
+        //console.log(rect);
+        interactiveObject.style.position = 'fixed';
+        interactiveObject.style.left = (rect.left - 10) + 'px';
+        interactiveObject.style.top = (rect.top) + 'px';
     }
-, 100)
+    if (inputController.isActionActive('right')) {
+        interactiveObject.style.position = 'fixed';
+        interactiveObject.style.left = (rect.left + 10) + 'px';
+        interactiveObject.style.top = (rect.top) + 'px';
+    }
+    if (inputController.isActionActive('jump')) {
+        //console.log(interactiveObject.style);
+        if (interactiveObject.style['background-color'] === 'black') {
+            interactiveObject.style['background-color'] = 'green';
+        }
+        else {
+            interactiveObject.style['background-color'] = 'black';
+        }
+
+    }
+}
+    , 100)

@@ -65,17 +65,20 @@ export class InputController {
         const pressedKeys = {};
        
         function keyPressed(event) {
-            console.log("keyPressed");
+            //console.log("keyPressed");
             pressedKeys[event.keyCode] = true;
         }
 
         function keyReleased(event) {
-            console.log("keyReleased");
+            //console.log("keyReleased");
             delete pressedKeys[event.keyCode];
         }
 
+
         document.addEventListener("keydown", keyPressed);
         document.addEventListener("keyup", keyReleased);
+        document.addEventListener("click", keyPressed);
+        //document.addEventListener("keyup", keyReleased);
         return pressedKeys[keyCode] === true;
     }
 }
