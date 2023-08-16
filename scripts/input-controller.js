@@ -18,7 +18,8 @@ export class InputController {
 
     bindActions(Activnost) {
         const name = Activnost.name;
-            this.activites.set(name, Activnost);
+        this.activites.set(name, Activnost);
+
     }
 
     enableAction(actionName) {
@@ -34,7 +35,7 @@ export class InputController {
 
         return activ != null && activ.isActiveNow();
     }
-    
+
     attach(target, dontEnable) {
         this.#plugins.forEach(plugin => {
             plugin.attach(target);
@@ -63,7 +64,7 @@ export class InputController {
 
     isKeyPressed(keyCode) {
         const pressedKeys = {};
-       
+
         function keyPressed(event) {
             //console.log("keyPressed");
             pressedKeys[event.keyCode] = true;
@@ -74,10 +75,20 @@ export class InputController {
             delete pressedKeys[event.keyCode];
         }
 
+        function keyPressedMouse(event) {
+            //console.log("keyReleased");
+            if (pressedKeys[event.which]) {
+                delete pressedKeys[event.which];
+                return false;
+            }
+            pressedKeys[event.which] = true;
+            return true;
+        }
+
 
         document.addEventListener("keydown", keyPressed);
         document.addEventListener("keyup", keyReleased);
-        document.addEventListener("click", keyPressed);
+        document.addEventListener("click", keyPressedMouse);
         //document.addEventListener("keyup", keyReleased);
         return pressedKeys[keyCode] === true;
     }

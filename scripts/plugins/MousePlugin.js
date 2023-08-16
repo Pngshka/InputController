@@ -18,19 +18,19 @@ export class MousePlugin extends BasePlugin {
         this.detach();
         this._target = target;
         this.#lastEvent = this.startAndEndEvent.bind(this);
-        this._target.addEventListener('onclick', this.#lastEvent);
-        this._target.addEventListener('onclick', this.#lastEvent);
+        this._target.addEventListener('click', this.#lastEvent);
+        this._target.addEventListener('click', this.#lastEvent);
     }
 
     detach() {
         if (!this._target) return;
-        this._target.removeEventListener('onclick', this.#lastEvent);
-        this._target.removeEventListener('onclick', this.#lastEvent);
+        this._target.removeEventListener('click', this.#lastEvent);
+        this._target.removeEventListener('click', this.#lastEvent);
         this.enable = false;
     }
 
     getActionEvent(e) {
-        return e.type === 'onclick' ? InputController.ACTION_ACTIVATED : InputController.ACTION_DEACTIVATED;
+        return e.type === 'click' ? InputController.ACTION_ACTIVATED : InputController.ACTION_DEACTIVATED;
     }
 
     startAndEndEvent(e) {
@@ -40,8 +40,9 @@ export class MousePlugin extends BasePlugin {
         if (this._inputController.enabled === false) return;
 
         const goodActives = Array.from(this._inputController.activites.values())
-            .filter(x => x.enable && x instanceof ActivWithMouseCode && x.keys.includes(e.keyCode));
+            .filter(x => x.enable && x instanceof ActivWithMouseCode && x.keys.includes(e.which));
 
+            console.log(goodActives);
 
         for (let index in goodActives) {
             const goodActiv = goodActives[index];
@@ -58,7 +59,7 @@ export class MousePlugin extends BasePlugin {
                 detail: { name: goodActiv.name }
             });
             this._target.dispatchEvent(event);
-            if (ACTION === 'input-controller:action-activated') goodActiv.activeNow = e.keyCode;
+            if (ACTION === 'input-controller:action-activated') goodActiv.activeNow = e.which;
             else if (goodActiv.activeNow != activeButtons) goodActiv.activeNow = 0;
 
             console.log(goodActiv.activeNow);
