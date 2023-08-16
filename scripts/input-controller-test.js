@@ -1,4 +1,5 @@
 import { InputController } from './input-controller.js';
+import { KeyboardPlugin } from './plugins/KeyboardPlugin.js';
 
 
 let someObj = {
@@ -11,6 +12,8 @@ let someObj = {
 };
 let inputController = new InputController();
 inputController.bindActions(someObj);
+let keyboardPlugin = new KeyboardPlugin(inputController);
+inputController.addPlugin(keyboardPlugin);
 
 
 
