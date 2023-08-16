@@ -18,7 +18,10 @@ export class InputController {
 
     bindActions(Activnost) {
         const name = Activnost.name;
-        this.activites.set(name, Activnost);
+
+        if (this.activites.has(name)){
+            this.activites.get(name).unionWithOtherActiv(Activnost.keys);
+        } else this.activites.set(name, Activnost);
 
     }
 
@@ -31,6 +34,7 @@ export class InputController {
     }
 
     isActionActive(actionName) {
+
         const activ = this.activites.get(actionName);
 
         return activ != null && activ.isActiveNow();
@@ -55,41 +59,30 @@ export class InputController {
             this.#plugins.splice(index, 1);
     }
 
-    /*detach() {
-        if (!this.#target) return;
-        this.#target.removeEventListener('keydown', this.startAndEndEvent);
-        this.#target.removeEventListener('keyup', this.startAndEndEvent);
-        this.enable = false;
-    }*/
+    detach() {
+        this.#plugins.forEach(plugin => {
+            plugin.detach();
+        });
+    }
 
     isKeyPressed(keyCode) {
         const pressedKeys = {};
+        let flag = false;
 
         function keyPressed(event) {
-            //console.log("keyPressed");
             pressedKeys[event.keyCode] = true;
         }
 
         function keyReleased(event) {
-            //console.log("keyReleased");
             delete pressedKeys[event.keyCode];
-        }
-
-        function keyPressedMouse(event) {
-            //console.log("keyReleased");
-            if (pressedKeys[event.which]) {
-                delete pressedKeys[event.which];
-                return false;
-            }
-            pressedKeys[event.which] = true;
-            return true;
         }
 
 
         document.addEventListener("keydown", keyPressed);
         document.addEventListener("keyup", keyReleased);
-        document.addEventListener("click", keyPressedMouse);
-        //document.addEventListener("keyup", keyReleased);
+        document.addEventListener("mousedown", keyPressed);
+        document.addEventListener("mouseup", keyReleased);
+
         return pressedKeys[keyCode] === true;
     }
 }

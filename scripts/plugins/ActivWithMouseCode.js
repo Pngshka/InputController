@@ -10,10 +10,6 @@ export class ActivWithMouseCode extends BaseActiv {
         this.keys = keys;
     }
 
-    isActiveNow() {
-        return this.enable && this.activeNow != 0;
-    }
-
     unionWithOtherActiv(keys) {
         this.keys.push(...keys);
     }

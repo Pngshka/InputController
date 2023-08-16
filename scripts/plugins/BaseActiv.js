@@ -10,6 +10,10 @@ export class BaseActiv {
         this.enable = enable;
     }
 
-    isActiveNow() { }
+    isActiveNow() {
+        return this.enable && this.activeNow != 0;
+    }
+
+    unionWithOtherActiv(keys) { }
 
 }

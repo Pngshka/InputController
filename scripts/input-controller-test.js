@@ -7,7 +7,9 @@ import { ActivWithMouseCode } from './plugins/ActivWithMouseCode.js';
 
 let leftAktiv = new ActivWithKeyCode("left", true, [37, 65]);
 let rightAktiv = new ActivWithKeyCode("right", true, [39, 68]);
-let jumpSecondAktiv = new ActivWithMouseCode("jump", true, [1]);
+let jumpSecondAktiv = new ActivWithMouseCode("jump", true, [2]);
+let leftSecondAktiv = new ActivWithMouseCode("left", true, [1]);
+let rightSecondAktiv = new ActivWithMouseCode("right", true, [3]);
 
 let inputController = new InputController();
 
@@ -20,6 +22,8 @@ inputController.addPlugin(mousePlugin);
 inputController.bindActions(leftAktiv);
 inputController.bindActions(rightAktiv);
 inputController.bindActions(jumpSecondAktiv);
+inputController.bindActions(leftSecondAktiv);
+inputController.bindActions(rightSecondAktiv);
 
 
 function printDebug(text) {
